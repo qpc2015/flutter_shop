@@ -47,10 +47,18 @@ class _ProductListPageState extends State<ProductListPage> {
     {"id": 3, "title": "价格", "fileds": 'price', "sort": -1},
     {"id": 4, "title": "筛选"}
   ];
+ //是否有搜索的数据
+  bool _hasData = true;
+  var _initKeyWordsController = new TextEditingController();
+  String _keywords;
+
 
   @override
   void initState() {
     super.initState();
+    this._keywords = widget.arguments["keywords"];
+    this._initKeyWordsController.text = this._keywords;
+
     _getProductListData();
     //监听滚动条滚动事件
     _scrollController.addListener(() {
@@ -70,10 +78,25 @@ class _ProductListPageState extends State<ProductListPage> {
       setState(() {
         this._flag = false;
       });
-      var api =
+      var api;
+      if(this._keywords == null){
+        api =
           '${Config.domain}api/plist?cid=${widget.arguments["cid"]}&page=${this._page}&sort=${this._sort}&pageSize=${this._pageSize}';
+      }else{
+        api ='${Config.domain}api/plist?search=${this._keywords}&page=${this._page}&sort=${this._sort}&pageSize=${this._pageSize}';
+      }
+      
       Response result = await Dio().get(api);
       var productList = ProductModel.fromJson(result.data);
+       //判断是否有搜索数据
+      if(productList.result.length==0 && this._page==1){
+        setState(() {
+          this._hasData = false;
+        });
+      }else{
+        this._hasData = true;
+      }
+      print("reslut:$result");
       if (productList.result.length < this._pageSize) {
         print("最后一页数据");
         setState(() {
@@ -100,7 +123,7 @@ class _ProductListPageState extends State<ProductListPage> {
         margin: EdgeInsets.only(top: ScreenAdaper.height(80)),
         padding: EdgeInsets.all(10),
         child: ListView.builder(
-          controller: _scrollController,
+          controller: this._scrollController,
           itemBuilder: (context, index) {
             ProductItemModel model = _productList[index];
             //处理图片链接
@@ -198,7 +221,9 @@ class _ProductListPageState extends State<ProductListPage> {
         //改变排序数据
         this._subHeaderList[id-1]['sort'] = this._subHeaderList[id-1]['sort'] * -1;
         //回到顶部
-        _scrollController.jumpTo(0);
+        if(this._productList.length>0){
+          _scrollController.jumpTo(0);
+        }
         this._hasMore = true;
         this._getProductListData();
       });
@@ -276,15 +301,47 @@ class _ProductListPageState extends State<ProductListPage> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text('商品列表'),
-          actions: <Widget>[Text("")],
+          title: Container(
+          height: ScreenAdaper.height(68),
+          color: Colors.grey,
+          child: TextField(
+            autofocus:false,
+            controller: this._initKeyWordsController,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none
+              )
+            ), 
+            onChanged: (value){
+              setState(() {
+                this._keywords = value;
+              });
+            },
+          ),
+        ),
+        actions: <Widget>[
+          InkWell(
+            child: Container(
+              height: ScreenAdaper.height(68),
+              width: ScreenAdaper.width(80),
+              alignment: Alignment.center,
+              child: Text("搜索"),
+            ),
+            onTap: (){
+              this._subHeaderChange(1);
+            },
+          )
+        ],
         ),
         endDrawer: Drawer(
           child: Text("筛选功能"),
         ),
-        body: Stack(children: <Widget>[
+        body: _hasData ? Stack(children: <Widget>[
           _productListView(),
           _subHeaderWidget(),
-        ]));
+        ]) : Center(child: Text("没有您要浏览的数据"),)
+        );
   }
 }

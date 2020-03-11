@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/services/ScreenAdaper.dart';
+import '../services/SearchServices.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key key}) : super(key: key);
@@ -9,6 +10,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  var _keywords;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +26,11 @@ class _SearchPageState extends State<SearchPage> {
                 borderSide: BorderSide.none
               )
             ), 
+            onChanged: (value){
+              setState(() {
+                _keywords = value;
+              });
+            },
           ),
         ),
         actions: <Widget>[
@@ -31,10 +38,13 @@ class _SearchPageState extends State<SearchPage> {
             child: Container(
               height: ScreenAdaper.height(68),
               width: ScreenAdaper.width(80),
+              alignment: Alignment.center,
               child: Text("搜索"),
             ),
             onTap: (){
-              
+              Navigator.pushReplacementNamed(context, '/productList',arguments: {
+                'keywords':this._keywords
+              });
             },
           )
         ],
