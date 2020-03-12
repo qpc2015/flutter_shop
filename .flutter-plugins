@@ -1,5 +1,5 @@
 # This is a generated file; do not edit or check into version control.
-flutter_inappwebview=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview-2.1.0+1/
-shared_preferences=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/
-shared_preferences_macos=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/
-shared_preferences_web=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/
+flutter_webview_plugin=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_webview_plugin-0.3.10+1/
+shared_preferences=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/
+shared_preferences_macos=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/
+shared_preferences_web=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/
