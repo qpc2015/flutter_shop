@@ -13,7 +13,8 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   List _focusData = [];
   List _likeProductData = [];
   List _hotProductData = [];
@@ -84,11 +85,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             },
             autoplay: true,
             pagination: new SwiperPagination(
-              builder: DotSwiperPaginationBuilder(
-                color:Colors.white,
-                activeColor: Colors.lightBlue,
-              )
-            ),
+                builder: DotSwiperPaginationBuilder(
+              color: Colors.white,
+              activeColor: Colors.lightBlue,
+            )),
           ),
         ),
       );
@@ -155,58 +155,65 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         runSpacing: 10,
         spacing: 10,
         children: this._hotProductData.map((value) {
-            String spic = value.sPic;
-            spic = Config.domain + spic.replaceAll("\\", "/");
+          String spic = value.sPic;
+          spic = Config.domain + spic.replaceAll("\\", "/");
 
-          return Container(
-            padding: EdgeInsets.all(10),
-            width: itemWidth,
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color: Color.fromRGBO(233, 233, 233, 0.9), width: 1),
-            ),
-            child: Column(
-              children: <Widget>[
-                Container(
-                    width: double.infinity,
-                    child: AspectRatio(
-                      aspectRatio: 1 / 1,
-                      child: Image.network(
-                        "$spic",
-                        fit: BoxFit.cover,
-                      ),
-                    )),
-                Padding(
-                  padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
-                  child: Text(
-                    "${value.title}",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
-                  child: Stack(children: <Widget>[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "¥${value.price}",
-                        style: TextStyle(color: Colors.red, fontSize: 16),
-                      ),
+          return InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, "/productContent",arguments: {
+                  'id':value.sId
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.all(10),
+              width: itemWidth,
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: Color.fromRGBO(233, 233, 233, 0.9), width: 1),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                      width: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1 / 1,
+                        child: Image.network(
+                          "$spic",
+                          fit: BoxFit.cover,
+                        ),
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
+                    child: Text(
+                      "${value.title}",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.black54),
                     ),
-                    Align(
-                        alignment: Alignment.centerRight,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: ScreenAdaper.height(20)),
+                    child: Stack(children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
                         child: Text(
-                          "¥${value.oldPrice}",
-                          style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 14,
-                              decoration: TextDecoration.lineThrough),
-                        ))
-                  ]),
-                )
-              ],
+                          "¥${value.price}",
+                          style: TextStyle(color: Colors.red, fontSize: 16),
+                        ),
+                      ),
+                      Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            "¥${value.oldPrice}",
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                                decoration: TextDecoration.lineThrough),
+                          ))
+                    ]),
+                  )
+                ],
+              ),
             ),
           );
         }).toList(),

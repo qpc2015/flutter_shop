@@ -25,16 +25,16 @@ class SearchServices {
     try {
       List historyData = json.decode(await Storage.getString('searchList'));
       return historyData;
-    }catch{
+    }catch(e){
       return [];
     }
   }
 
-  static clearHistoryList() async{
+  static Future<void> clearHistoryList() async{
     await Storage.remove('searchList');
   }
 
-  static removeHistoryData(keywords) async{    
+  static Future<void> removeHistoryData(keywords) async{    
       List searchListData = json.decode(await Storage.getString('searchList'));
       searchListData.remove(keywords);
       await Storage.setString('searchList', json.encode(searchListData));

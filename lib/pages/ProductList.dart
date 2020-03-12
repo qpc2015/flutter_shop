@@ -3,7 +3,8 @@ import 'package:shop/model/ProductModel.dart';
 import '../services/ScreenAdaper.dart';
 import 'package:dio/dio.dart';
 import '../config/Config.dart';
-import './Widget/LoadingWidget.dart';
+import '../Widget/LoadingWidget.dart';
+import '../services/SearchServices.dart';
 
 class ProductListPage extends StatefulWidget {
   Map arguments;
@@ -331,6 +332,7 @@ class _ProductListPageState extends State<ProductListPage> {
             ),
             onTap: (){
               this._subHeaderChange(1);
+              SearchServices.setHistoryData(this._keywords);
             },
           )
         ],
