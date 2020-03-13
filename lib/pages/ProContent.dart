@@ -18,13 +18,11 @@ class ProContentPage extends StatefulWidget {
 }
 
 class _ProContentPageState extends State<ProContentPage> {
-
   ProductContentItem _productContent;
 
-  _getContentData() async{
-
+  _getContentData() async {
     var api = '${Config.domain}api/pcontent?id=${widget.arguments['id']}';
-      print('api:$api');
+    print('api:$api');
     var result = await Dio().get(api);
     var productContent = ProductContentModel.fromJson(result.data);
     print(productContent);
@@ -89,51 +87,67 @@ class _ProContentPageState extends State<ProContentPage> {
                   }),
             ],
           ),
-          body: this._productContent != null ? Stack(
-            children: <Widget>[
-              TabBarView(children: <Widget>[
-                ProductFirstPage(this._productContent),
-                ProductSecondPage(this._productContent),
-                ProductThreePage()
-              ]),
-              Positioned(child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.black26,
-                      width: 1
-                    )
-                    ),
-                    color: Colors.white,
-                ),
-                child: Row(
+          body: this._productContent != null
+              ? Stack(
                   children: <Widget>[
-                    Container(
-                      width: 100,
-                      height: ScreenAdaper.height(88),
-                      child: Column(
+                    TabBarView(
+                        physics:
+                            NeverScrollableScrollPhysics(), //禁止TabBarView滑动
                         children: <Widget>[
-                          Icon(Icons.shopping_cart),
-                          Text("购物车")
-                        ],
-                      ),
-                    ),
-                    Expanded(child: QButton(text: '加入购物车',color: Colors.red,cb: (){
-
-                    },),
-                    flex: 1,),
-                    Expanded(child: QButton(text:'立即购买',color: Colors.orange,cb:(){
-
-                    }),
-                    flex: 1,),
+                          ProductFirstPage(this._productContent),
+                          ProductSecondPage(this._productContent),
+                          ProductThreePage()
+                        ]),
+                    _getBottomToolBar()
                   ],
-                ),
-              ),
-              width: ScreenAdaper.width(750),
-              height: ScreenAdaper.height(88),
-              bottom: 0,)
-            ],
-          ) : LoadingWidget(),
+                )
+              : LoadingWidget(),
         ));
+  }
+
+  Widget _getBottomToolBar() {
+    return Positioned(
+      width: ScreenAdaper.width(750),
+      height: ScreenAdaper.height(88),
+      bottom: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+              top: BorderSide(
+                  color: Colors.black26, width: ScreenAdaper.height(1))),
+          color: Colors.white,
+        ),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 100,
+              height: ScreenAdaper.height(86),
+              child: Column(
+                children: <Widget>[
+                  Icon(
+                    Icons.shopping_cart,
+                    size: ScreenAdaper.fontSize(40),
+                  ),
+                  Text("购物车",
+                      style: TextStyle(fontSize: ScreenAdaper.fontSize(28)))
+                ],
+              ),
+            ),
+            Expanded(
+              child: QButton(
+                text: '加入购物车',
+                color: Colors.red,
+                cb: () {},
+              ),
+              flex: 1,
+            ),
+            Expanded(
+              child: QButton(text: '立即购买', color: Colors.orange, cb: () {}),
+              flex: 1,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -12,14 +12,16 @@ class ProductFirstPage extends StatefulWidget {
   _ProductFirstPageState createState() => _ProductFirstPageState();
 }
 
-class _ProductFirstPageState extends State<ProductFirstPage> {
+class _ProductFirstPageState extends State<ProductFirstPage> with AutomaticKeepAliveClientMixin{
   ProductContentItem _model;
   List _attr = [];
   String _selectedValue;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     this._model = widget._item;
     this._attr = widget._item.attr;
@@ -46,6 +48,7 @@ class _ProductFirstPageState extends State<ProductFirstPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     //处理图片
     String pic = Config.domain + _model.pic;
     pic = pic.replaceAll('\\', '/');
@@ -165,10 +168,12 @@ class _ProductFirstPageState extends State<ProductFirstPage> {
         ),
       ]));
     });
+    print("168:${this._attr}");
     return attrList;
   }
 
   List<Widget> _getAttrItemWidget(arrtitem,setbottomState){
+    print("173:${arrtitem.attrSeleteList}");
     List<Widget> attritemLsit = [];
     arrtitem.attrSeleteList.forEach((item){
       attritemLsit.add(Container(
@@ -209,6 +214,7 @@ class _ProductFirstPageState extends State<ProductFirstPage> {
 
   //获取选中的值
   _getSelectedAttrValue() {
+    print('214:${this._attr}---${this._attr[0].attrSeleteList}');
     var _list = this._attr;
     List tempArr = [];
     for (var i = 0; i < _list.length; i++) {
@@ -218,7 +224,7 @@ class _ProductFirstPageState extends State<ProductFirstPage> {
         }
       }
     }
-    print(tempArr.join(','));
+    print('result:${tempArr.join(',')}');
     setState(() {
       this._selectedValue = tempArr.join(',');
     });

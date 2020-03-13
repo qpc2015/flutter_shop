@@ -53,6 +53,11 @@ class _ProductListPageState extends State<ProductListPage> {
   var _initKeyWordsController = new TextEditingController();
   String _keywords;
 
+  @override
+  void dispose(){
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -73,6 +78,8 @@ class _ProductListPageState extends State<ProductListPage> {
       }
     });
   }
+
+  
 
   _getProductListData() async {
     try {
