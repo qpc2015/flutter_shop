@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/Widget/LoadingWidget.dart';
+import '../provider/CartProvider.dart';
 import 'package:shop/services/ScreenAdaper.dart';
 import '../pages/Product/ProductFirst.dart';
 import '../pages/Product/ProductSecond.dart';
@@ -8,6 +10,9 @@ import '../Widget/QButton.dart';
 import 'package:dio/dio.dart';
 import '../config/Config.dart';
 import '../model/ProductContentMode.dart';
+import '../services/EventBus.dart';
+import '../services/CarService.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProContentPage extends StatefulWidget {
   final Map arguments;
@@ -106,6 +111,7 @@ class _ProContentPageState extends State<ProContentPage> {
   }
 
   Widget _getBottomToolBar() {
+    var cartProvider = Provider.of<CartProvider>(context);
     return Positioned(
       width: ScreenAdaper.width(750),
       height: ScreenAdaper.height(88),
@@ -122,7 +128,11 @@ class _ProContentPageState extends State<ProContentPage> {
             Container(
               width: 100,
               height: ScreenAdaper.height(86),
-              child: Column(
+              child: InkWell(
+                onTap: (){
+                  Navigator.pushNamed(context, '/shopcart');
+                },
+                child: Column(
                 children: <Widget>[
                   Icon(
                     Icons.shopping_cart,
@@ -132,17 +142,38 @@ class _ProContentPageState extends State<ProContentPage> {
                       style: TextStyle(fontSize: ScreenAdaper.fontSize(28)))
                 ],
               ),
+              )
             ),
             Expanded(
               child: QButton(
                 text: '加入购物车',
                 color: Colors.red,
-                cb: () {},
+                cb: () async {
+                  if (this._productContent.attr.length > 0) {
+                    eventBus.fire(new ProductContentEvent("购物车"));
+                  } else {
+                    await CartService.addCart(this._productContent);
+                    cartProvider.updateCarList();
+                    Fluttertoast.showToast(
+                        msg: '加入购物车成功',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER);
+                  }
+                },
               ),
               flex: 1,
             ),
             Expanded(
-              child: QButton(text: '立即购买', color: Colors.orange, cb: () {}),
+              child: QButton(
+                  text: '立即购买',
+                  color: Colors.orange,
+                  cb: () {
+                    if (this._productContent.attr.length > 0) {
+                      eventBus.fire(new ProductContentEvent("购物车"));
+                    } else {
+                      print("立即购买");
+                    }
+                  }),
               flex: 1,
             ),
           ],

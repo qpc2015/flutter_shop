@@ -3,13 +3,24 @@ import '../pages/Tabs/Tabs.dart';
 import '../pages/Search.dart';
 import '../pages/ProductList.dart';
 import '../pages/ProContent.dart';
+import '../pages/Tabs/ShopCar.dart';
+import '../pages/Login/Login.dart';
+import '../pages/Login/RegisterFirst.dart';
+import '../pages/Login/RegisterSecond.dart';
+import '../pages/Login/RegisterThird.dart';
 
 //配置路由
 final routes = {
   '/': (context) => Tabs(),
   '/search': (context) => SearchPage(),
+  '/shopcart' : (context) => ShopCarPage(),
+    '/login': (context) => LoginPage(),
+  '/registerFirst': (context) => RegisterFirstPage(),
+  '/registerSecond': (context,{arguments}) => RegisterSecondPage(arguments: arguments,),
+  '/registerThird': (context,{arguments}) => RegisterThirdPage(arguments: arguments,),
   '/productList':(context,{arguments}) => ProductListPage(arguments:arguments),
   '/productContent' : (context,{arguments}) => ProContentPage(arguments:arguments),
+
 };
 
 //固定写法

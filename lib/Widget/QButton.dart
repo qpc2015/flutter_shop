@@ -6,7 +6,8 @@ class QButton extends StatelessWidget {
   final Color color;
   final String text;
   final Object cb;
-  const QButton({Key key,this.color=Colors.black,this.text='按钮',this.cb=null}) : super(key: key);
+  final double height;
+  const QButton({Key key,this.color=Colors.black,this.text='按钮',this.cb=null,this.height=68}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class QButton extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(5),
-        height: ScreenAdaper.height(68),
+        height: ScreenAdaper.height(this.height),
         width: double.infinity,
         decoration: BoxDecoration(
           color: color,
