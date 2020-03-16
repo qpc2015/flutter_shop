@@ -5,7 +5,7 @@ class SearchServices {
 
   static setHistoryData(keywords) async{
     try{
-      List searchList = json.decode(await Storage.getString('searchList'));
+      List searchList = json.decode(await Storage.getString('searchList') ?? '');
       print(searchList);
       var hasData = searchList.any((v){
         return v == keywords;
@@ -23,7 +23,7 @@ class SearchServices {
 
   static getHistoryList() async{
     try {
-      List historyData = json.decode(await Storage.getString('searchList'));
+      List historyData = json.decode(await Storage.getString('searchList') ?? '');
       return historyData;
     }catch(e){
       return [];
@@ -35,7 +35,7 @@ class SearchServices {
   }
 
   static Future<void> removeHistoryData(keywords) async{    
-      List searchListData = json.decode(await Storage.getString('searchList'));
+      List searchListData = json.decode(await Storage.getString('searchList') ?? '');
       searchListData.remove(keywords);
       await Storage.setString('searchList', json.encode(searchListData));
   }

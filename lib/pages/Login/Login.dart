@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop/Widget/QButton.dart';
+import 'package:shop/config/Config.dart';
+import 'package:shop/services/Storage.dart';
 import '../../Widget/QText.dart';
 import 'package:shop/services/ScreenAdaper.dart';
+import '../../services/EventBus.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -11,11 +17,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String username = '';
+  String password = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.close), onPressed: () {}),
+        leading: IconButton(icon: Icon(Icons.close), onPressed: () {
+          Navigator.pop(context);
+        }),
         actions: <Widget>[
           FlatButton(onPressed: () {}, child: Text("客服")),
         ],
@@ -39,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
             QText(
               text: "请输入用户名",
               onChanged: (value) {
-                print(value);
+                this.username = value;
               },
             ),
             SizedBox(height: 10),
@@ -47,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
               text: "请输入密码",
               password: true,
               onChanged: (value) {
-                print(value);
+                this.password = value;
               },
             ),
             SizedBox(height: 10),
@@ -76,11 +87,44 @@ class _LoginPageState extends State<LoginPage> {
               text: "登录",
               color: Colors.red,
               height: 74,
-              cb: () {},
+              cb: _postLogin,
             )
           ],
         ),
       ),
     );
+  }
+
+  _postLogin() async {
+    RegExp reg = new RegExp(r"^1\d{10}$");
+    if (!reg.hasMatch(this.username)) {
+      Fluttertoast.showToast(
+        msg: '手机号格式不对',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    } else if (this.password.length < 6) {
+      Fluttertoast.showToast(
+        msg: '密码不正确',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    } else {
+      var api = '${Config.domain}api/doLogin';
+      var response = await Dio().post(api,
+          data: {"username": this.username, "password": this.password});
+      print(response.data);
+      if (response.data["success"]) {
+        Storage.setString('userInfo', json.encode(response.data["userinfo"]));
+        eventBus.fire(new UserEvent("登录成功"));
+        Navigator.pop(context);
+      } else {
+        Fluttertoast.showToast(
+          msg: '${response.data["message"]}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+        );
+      }
+    }
   }
 }

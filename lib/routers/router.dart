@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import '../pages/Tabs/Tabs.dart';
 import '../pages/Search.dart';
@@ -8,19 +10,26 @@ import '../pages/Login/Login.dart';
 import '../pages/Login/RegisterFirst.dart';
 import '../pages/Login/RegisterSecond.dart';
 import '../pages/Login/RegisterThird.dart';
+import '../pages/Order.dart';
 
 //配置路由
 final routes = {
   '/': (context) => Tabs(),
   '/search': (context) => SearchPage(),
-  '/shopcart' : (context) => ShopCarPage(),
-    '/login': (context) => LoginPage(),
+  '/shopcart': (context) => ShopCarPage(),
+  '/login': (context) => LoginPage(),
+  '/order': (context) => OrderPage(),
   '/registerFirst': (context) => RegisterFirstPage(),
-  '/registerSecond': (context,{arguments}) => RegisterSecondPage(arguments: arguments,),
-  '/registerThird': (context,{arguments}) => RegisterThirdPage(arguments: arguments,),
-  '/productList':(context,{arguments}) => ProductListPage(arguments:arguments),
-  '/productContent' : (context,{arguments}) => ProContentPage(arguments:arguments),
-
+  '/registerSecond': (context, {arguments}) => RegisterSecondPage(
+        arguments: arguments,
+      ),
+  '/registerThird': (context, {arguments}) => RegisterThirdPage(
+        arguments: arguments,
+      ),
+  '/productList': (context, {arguments}) =>
+      ProductListPage(arguments: arguments),
+  '/productContent': (context, {arguments}) =>
+      ProContentPage(arguments: arguments),
 };
 
 //固定写法

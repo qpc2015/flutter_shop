@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shop/Widget/QButton.dart';
 import 'package:shop/services/ScreenAdaper.dart';
+import '../../services/UserService.dart';
+import '../../services/EventBus.dart';
 
 class UserPage extends StatefulWidget {
   UserPage({Key key}) : super(key: key);
@@ -9,6 +12,27 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  bool isLogin = false;
+  List userInfo = [];
+  var userinfoEvent;
+
+  @override
+  void initState(){
+    super.initState();
+    this._refreshUserInfo();
+
+    userinfoEvent = eventBus.on<UserEvent>().listen((event){
+      print(event.str);
+      this._refreshUserInfo();
+    });
+  }
+
+  @override
+  void dispose() {
+    userinfoEvent.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,15 +58,35 @@ class _UserPageState extends State<UserPage> {
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: InkWell(
-                    child: Text("登录/注册", style: TextStyle(color: Colors.white)),
-                    onTap:(){
-                      Navigator.pushNamed(context, '/login');
-                    },
-                  ),
-                )
+                this.isLogin
+                    ? Expanded(
+                        flex: 1,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "用户名: ${this.userInfo[0]['username']}",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: ScreenAdaper.fontSize(32)),
+                            ),
+                            Text("普通会员",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: ScreenAdaper.fontSize(24))),
+                          ],
+                        ))
+                    : Expanded(
+                        flex: 1,
+                        child: InkWell(
+                          child: Text("登录/注册",
+                              style: TextStyle(color: Colors.white)),
+                          onTap: () {
+                            Navigator.pushNamed(context, '/login');
+                          },
+                        ),
+                      )
               ],
             ),
           ),
@@ -76,9 +120,32 @@ class _UserPageState extends State<UserPage> {
             leading: Icon(Icons.people, color: Colors.black54),
             title: Text("在线客服"),
           ),
-          Divider()
+          Divider(),
+          this.isLogin
+            ? Container(
+                padding: EdgeInsets.all(20),
+                child: QButton(
+                  color: Colors.red,
+                  text: "退出登录",
+                  cb: () {
+                     UserService.loginOut();
+                    this._refreshUserInfo();
+                  },
+                ),
+              )
+            : Text("")
         ],
       ),
     );
   }
+
+  _refreshUserInfo() async{
+    var islogin = await UserService.getUserLoginState() ;
+    var userinfo = await UserService.getUserInfo();
+    setState(() {
+      this.isLogin = islogin;
+      this.userInfo = userinfo;
+    });
+  }
+
 }

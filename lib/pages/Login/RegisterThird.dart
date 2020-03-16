@@ -26,7 +26,6 @@ class _RegisterThirdPageState extends State<RegisterThirdPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     this.tel = widget.arguments["tel"];
     this.code = widget.arguments["code"];
@@ -52,6 +51,7 @@ class _RegisterThirdPageState extends State<RegisterThirdPage> {
         "code": this.code,
         "password": this.password
       });
+      print(response.data);
       if (response.data["success"]) {
         //保存用户信息
         Storage.setString('userInfo', json.encode(response.data["userinfo"]));

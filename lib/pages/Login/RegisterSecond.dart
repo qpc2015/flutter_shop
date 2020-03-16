@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,9 @@ class RegisterSecondPage extends StatefulWidget {
 class _RegisterSecondPageState extends State<RegisterSecondPage> {
   String tel;
   bool sendCodeBtn = false;
-  int _seconds = 10;
+  int _seconds = 60;
   String code;
+  Timer _timer;
 
   @override
   void initState() {
@@ -29,8 +31,16 @@ class _RegisterSecondPageState extends State<RegisterSecondPage> {
     this._showTimer();
   }
 
+  @override
+  void dispose(){
+    if(_timer != null){
+      _timer.cancel();
+    }
+    super.dispose();
+  }
+
   _showTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         this._seconds--;
       });
@@ -46,7 +56,7 @@ class _RegisterSecondPageState extends State<RegisterSecondPage> {
   void sendCode() async {
     setState(() {
       this.sendCodeBtn = false;
-      this._seconds = 10;
+      this._seconds = 60;
       this._showTimer();
     });
 
@@ -67,7 +77,10 @@ class _RegisterSecondPageState extends State<RegisterSecondPage> {
     var response =
         await Dio().post(api, data: {"tel": this.tel, "code": this.code});
     if (response.data["success"]) {
-      Navigator.pushNamed(context, '/registerThird');
+      Navigator.pushNamed(context, '/registerThird',arguments: {
+        'tel':this.tel,
+        'code':this.code
+      });
     } else {
       Fluttertoast.showToast(
         msg: '${response.data["message"]}',
@@ -88,7 +101,7 @@ class _RegisterSecondPageState extends State<RegisterSecondPage> {
         child: ListView(
           children: <Widget>[
             SizedBox(
-              height: 50,
+              height: 20,
             ),
             Container(
               padding: EdgeInsets.only(left: 10),
@@ -99,11 +112,14 @@ class _RegisterSecondPageState extends State<RegisterSecondPage> {
             ),
             Stack(
               children: <Widget>[
-                QText(
+                Container(
+                  child: QText(
                   text: "请输入验证码",
                   onChanged: (value) {
                     this.code = value;
                   },
+                ),
+                height: ScreenAdaper.height(100),
                 ),
                 Positioned(
                   child: this.sendCodeBtn
