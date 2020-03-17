@@ -96,6 +96,9 @@ class _UserPageState extends State<UserPage> {
               color: Colors.red,
             ),
             title: Text("全部订单"),
+            onTap: (){
+              Navigator.pushNamed(context, "/myOrder");
+            },
           ),
           Divider(),
           ListTile(

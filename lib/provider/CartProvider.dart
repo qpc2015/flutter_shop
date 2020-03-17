@@ -94,7 +94,7 @@ class CartProvider with ChangeNotifier {
     double tempAllPrice = 0;
     for (var i = 0; i < this._cartList.length; i++) {
       if (this._cartList[i]['checked'] == true) {
-        tempAllPrice += this._cartList[i]["price"] * this._cartList[i]["count"];
+        tempAllPrice +=this._cartList[i]["price"]  * this._cartList[i]["count"];
       }
     }
     this._allPrice = tempAllPrice;

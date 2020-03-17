@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import '../pages/Tabs/Tabs.dart';
 import '../pages/Search.dart';
@@ -12,6 +14,9 @@ import '../pages/Order.dart';
 import '../pages/Adress/AddressList.dart';
 import '../pages/Adress/AdressAdd.dart';
 import '../pages/Adress/AdressEdit.dart';
+import '../pages/Pay.dart';
+import '../pages/MyOrder.dart';
+import '../pages/OrderDetail.dart';
 
 //配置路由
 final routes = {
@@ -22,7 +27,10 @@ final routes = {
   '/registerFirst': (context) => RegisterFirstPage(),
   '/adressList': (context) => AdressListPage(),
   '/adressAdd': (context) => AdressAddPage(),
-  '/adressEdit': (context) => AdressEditPage(),
+  '/pay': (context) => PayPage(),
+  '/myOrder': (context) => MyOrderPage(),
+  '/orderDetail': (context) =>  OrderDetailPage(),
+  '/adressEdit': (context,{arguments}) => AdressEditPage(arguments: arguments,),
   '/registerSecond': (context, {arguments}) => RegisterSecondPage(arguments: arguments,),
   '/registerThird': (context, {arguments}) => RegisterThirdPage(arguments: arguments,),
   '/order': (context,{arguments}) => OrderPage(arguments: arguments),

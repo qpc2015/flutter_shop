@@ -1,32 +1,51 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/config/Config.dart';
+import 'package:shop/provider/CartProvider.dart';
+import 'package:shop/services/EventBus.dart';
+import 'package:shop/services/OrderService.dart';
 import 'package:shop/services/ScreenAdaper.dart';
 import 'package:shop/services/SignServices.dart';
 import 'package:shop/services/UserService.dart';
 
 class OrderPage extends StatefulWidget {
   Map arguments;
-  OrderPage({Key key,this.arguments}) : super(key: key);
+  OrderPage({Key key, this.arguments}) : super(key: key);
 
   @override
   _OrderPageState createState() => _OrderPageState();
 }
 
 class _OrderPageState extends State<OrderPage> {
-
   List _dataList = [];
   Map _adressData;
+  var _freshDefaultAd;
+  
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     this._dataList = widget.arguments["checkList"];
     this._getDefaultAddress();
+    _freshDefaultAd = eventBus.on<DefaultAdressChangeEvent>().listen((event) {
+      print(event.str);
+      this._getDefaultAddress();
+    });
+  }
+
+  @override
+  void dispose() {
+    _freshDefaultAd.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
+  var cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("结算"),
@@ -39,26 +58,32 @@ class _OrderPageState extends State<OrderPage> {
                 color: Colors.white,
                 child: Column(
                   children: <Widget>[
-                   this._adressData != null ? ListTile(
-                     title: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: <Widget>[
-                                             Text("${this._adressData["name"]}  ${this._adressData["phone"]}"),
-                          SizedBox(height: 10),
-                          Text("${this._adressData["address"]}"),
-                       ],
-                     ),
-                     trailing: Icon(Icons.navigate_next),
-                     onTap: (){
-                       Navigator.pushNamed(context, "/adressList");
-                     },
-                   ) :  ListTile(
-                      leading: Icon(Icons.add_location),
-                      title: Center(
-                        child: Text("请添加收货地址"),
-                      ),
-                      trailing: Icon(Icons.navigate_next),
-                    )
+                    this._adressData != null
+                        ? ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                    "${this._adressData["name"]}  ${this._adressData["phone"]}"),
+                                SizedBox(height: 10),
+                                Text("${this._adressData["address"]}"),
+                              ],
+                            ),
+                            trailing: Icon(Icons.navigate_next),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/adressList");
+                            },
+                          )
+                        : ListTile(
+                            leading: Icon(Icons.add_location),
+                            title: Center(
+                              child: Text("请添加收货地址"),
+                            ),
+                            trailing: Icon(Icons.navigate_next),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/adressAdd");
+                            },
+                          )
                   ],
                 ),
               ),
@@ -67,12 +92,9 @@ class _OrderPageState extends State<OrderPage> {
                 color: Colors.white,
                 padding: EdgeInsets.all(ScreenAdaper.width(20)),
                 child: Column(
-                  children: this._dataList.map((value){
+                  children: this._dataList.map((value) {
                     return Column(
-                      children: <Widget>[
-                        _checkOutItem(value),
-                        Divider()
-                      ],
+                      children: <Widget>[_checkOutItem(value), Divider()],
                     );
                   }).toList(),
                 ),
@@ -102,37 +124,35 @@ class _OrderPageState extends State<OrderPage> {
             height: ScreenAdaper.height(100),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    width: 1,
-                    color: Colors.black26
-                  )
-                )
-              ),
+                  color: Colors.white,
+                  border:
+                      Border(top: BorderSide(width: 1, color: Colors.black26))),
               child: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    margin: EdgeInsets.only(left: 5),
-                    child: Text("总价:￥140", style: TextStyle(color: Colors.red)),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.only(right: 5),
-                    child: RaisedButton(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      margin: EdgeInsets.only(left: 5),
                       child:
-                          Text('立即下单', style: TextStyle(color: Colors.white)),
-                      color: Colors.red,
-                      onPressed: () {},
+                          Text("总价:￥140", style: TextStyle(color: Colors.red)),
                     ),
                   ),
-                )
-              ],
-            ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      margin: EdgeInsets.only(right: 5),
+                      child: RaisedButton(
+                        child:
+                            Text('立即下单', style: TextStyle(color: Colors.white)),
+                        color: Colors.red,
+                        onPressed: (){
+                          this._goPay(cartProvider);
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           )
         ],
@@ -167,8 +187,8 @@ class _OrderPageState extends State<OrderPage> {
                     children: <Widget>[
                       Align(
                         alignment: Alignment.centerLeft,
-                        child:
-                            Text("￥${value['price']}", style: TextStyle(color: Colors.red)),
+                        child: Text("￥${value['price']}",
+                            style: TextStyle(color: Colors.red)),
                       ),
                       Align(
                         alignment: Alignment.centerRight,
@@ -183,19 +203,62 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  _getDefaultAddress() async{
-      List userinfo = await UserService.getUserInfo();
+  _getDefaultAddress() async {
+    List userinfo = await UserService.getUserInfo();
     // print('1234');
-    var tempJson = {
-      "uid": userinfo[0]["_id"],     
-      "salt": userinfo[0]["salt"]
-    };
+    var tempJson = {"uid": userinfo[0]["_id"], "salt": userinfo[0]["salt"]};
     var sign = SignServices.getSign(tempJson);
-    var api = '${Config.domain}api/oneAddressList?uid=${userinfo[0]["_id"]}&sign=$sign';
+    var api =
+        '${Config.domain}api/oneAddressList?uid=${userinfo[0]["_id"]}&sign=$sign';
     var response = await Dio().get(api);
     print(response);
-    setState(() {
-      this._adressData = response.data["result"][0];
+    List resultList = response.data["result"];
+    if (resultList.length > 0) {
+      setState(() {
+        this._adressData = resultList[0];
+      });
+    }
+  }
+
+  _goPay(cartProvider) async {
+
+    List userinfo = await UserService.getUserInfo();
+    //注意：商品总价保留一位小数
+    var allPrice = OrderService.getAllPrice(this._dataList).toStringAsFixed(1);
+    print(allPrice);
+    //获取签名
+    var sign = SignServices.getSign({
+      "uid": userinfo[0]["_id"],
+      "phone": this._adressData["phone"],
+      "address": this._adressData["address"],
+      "name": this._adressData["name"],
+      "all_price": allPrice,
+      "products": json.encode(this._dataList),
+      "salt": userinfo[0]["salt"] //私钥
     });
+    //请求接口
+    var api = '${Config.domain}api/doOrder';
+    var response = await Dio().post(api, data: {
+      "uid": userinfo[0]["_id"],
+      "phone": this._adressData["phone"],
+      "address": this._adressData["address"],
+      "name": this._adressData["name"],
+      "all_price": allPrice,
+      "products": json.encode(this._dataList),
+      "sign": sign
+    });
+    print(response);
+    if (response.data["success"]) {
+      //删除购物车选中的商品数据
+      await OrderService.removeUnSeletedCartItem();
+
+      //调用CartProvider更新购物车数据
+      cartProvider.updateCarList();
+
+      //跳转到支付页面
+      Navigator.pushNamed(context, '/pay');
+    }else{
+      print(response);
+    }
   }
 }

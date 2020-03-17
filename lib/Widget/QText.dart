@@ -7,19 +7,22 @@ class QText extends StatelessWidget {
   final Object onChanged;
   final int maxLines;
   final double height;
+  final TextEditingController contorller;
   const QText(
       {Key key,
       this.text = "默认内容",
       this.password = false,
       this.onChanged = null,
       this.maxLines=1,
-      this.height=68})
+      this.height=68,
+      this.contorller= null})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: TextField(
+        controller: this.contorller,
         maxLines: this.maxLines,
         obscureText: this.password,
         decoration: InputDecoration(

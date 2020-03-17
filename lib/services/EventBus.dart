@@ -24,3 +24,17 @@ class AdressAddEvent{
     this.str = str;
   }
 }
+
+class DefaultAdressChangeEvent{
+  String str;
+  DefaultAdressChangeEvent(String str){
+    this.str = str;
+  }
+}
+
+class AdressEditEvent{
+  String str;
+  AdressEditEvent(String str){
+    this.str = str;
+  }
+}

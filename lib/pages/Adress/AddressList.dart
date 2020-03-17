@@ -17,7 +17,7 @@ class AdressListPage extends StatefulWidget {
 class _AdressListPageState extends State<AdressListPage> {
   List _addressList = [];
   var _addEvent;
-
+  var _editEvent;
   @override
   void initState() {
     super.initState();
@@ -26,11 +26,16 @@ class _AdressListPageState extends State<AdressListPage> {
       print(event.str);
       this._getAdressList();
     });
+    _editEvent = eventBus.on<AdressEditEvent>().listen((event) {
+      print(event.str);
+      this._getAdressList();
+    });
   }
 
   @override
   void dispose() {
     _addEvent.cancel();
+    _editEvent.cancel();
     super.dispose();
   }
 
@@ -65,8 +70,16 @@ class _AdressListPageState extends State<AdressListPage> {
                             onTap: () {
                               this._changeDefaultAdress(item["_id"]);
                             },
+                            onLongPress: () {
+                              this._showDeleteAlertDialog(item["_id"]);
+                            },
                           ),
-                          trailing: Icon(Icons.edit, color: Colors.blue),
+                          trailing: IconButton(
+                              icon: Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/adressEdit",
+                                    arguments: item);
+                              }),
                         ),
                         Divider(height: 20),
                       ],
@@ -88,8 +101,17 @@ class _AdressListPageState extends State<AdressListPage> {
                             onTap: () {
                               this._changeDefaultAdress(item["_id"]);
                             },
+                            onLongPress: () {
+                              this._showDeleteAlertDialog(item["_id"]);
+                            },
                           ),
-                          trailing: Icon(Icons.edit, color: Colors.blue),
+                          trailing: IconButton(
+                            icon: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/adressEdit",
+                                  arguments: item);
+                            },
+                          ),
                         ),
                         Divider(height: 20),
                       ],
@@ -135,6 +157,7 @@ class _AdressListPageState extends State<AdressListPage> {
     var api =
         '${Config.domain}api/addressList?uid=${userinfo[0]['_id']}&sign=$sign';
     var response = await Dio().get(api);
+    print('adress:$response');
     if (response.data["success"]) {
       setState(() {
         this._addressList = response.data["result"];
@@ -162,6 +185,7 @@ class _AdressListPageState extends State<AdressListPage> {
         .post(api, data: {"uid": userinfo[0]['_id'], "id": id, "sign": sign});
 
     if (response.data["success"]) {
+      eventBus.fire(new DefaultAdressChangeEvent("切换默认地址"));
       Navigator.pop(context);
     } else {
       Fluttertoast.showToast(
@@ -171,5 +195,45 @@ class _AdressListPageState extends State<AdressListPage> {
         timeInSecForIos: 1,
       );
     }
+  }
+
+  _showDeleteAlertDialog(id) async {
+    var result = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("提示信息"),
+            content: Text("你确定要删除该地址吗"),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("取消")),
+              FlatButton(
+                  onPressed: () {
+                    this._delAddress(id);
+                    Navigator.pop(context);
+                  },
+                  child: Text("确定"))
+            ],
+          );
+        });
+  }
+
+  _delAddress(id) async {
+    List userinfo = await UserService.getUserInfo();
+    var tempJson = {
+      "uid": userinfo[0]["_id"],
+      "id": id,
+      "salt": userinfo[0]["salt"]
+    };
+
+    var sign = SignServices.getSign(tempJson);
+    var api = '${Config.domain}api/deleteAddress';
+    var response = await Dio()
+        .post(api, data: {"uid": userinfo[0]["_id"], "id": id, "sign": sign});
+    this._getAdressList(); //删除收货地址完成后重新获取列表
   }
 }
