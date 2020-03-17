@@ -16,3 +16,11 @@ class UserEvent{
     this.str = str;
   }
 }
+
+
+class AdressAddEvent{
+  String str;
+  AdressAddEvent(String str){
+    this.str = str;
+  }
+}

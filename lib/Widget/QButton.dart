@@ -23,7 +23,7 @@ class QButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10)
         ),
         child: Center(
-          child: Text('$text',style: TextStyle(color: Colors.white),),
+          child: Text('$text',style: TextStyle(color: Colors.white)),
         ),
       ),
     );

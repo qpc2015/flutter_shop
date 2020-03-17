@@ -15,12 +15,6 @@ class CartItem extends StatefulWidget {
 class _CartItemState extends State<CartItem> {
     Map _itemData;
 
-  //   @override
-  // void initState() {
-  //   super.initState();
-
-  // }
-
   @override
   Widget build(BuildContext context) {
 
@@ -57,7 +51,10 @@ class _CartItemState extends State<CartItem> {
                Text("${_itemData["title"]}",maxLines: 2,textAlign: TextAlign.left,style: TextStyle(
                  fontSize: ScreenAdaper.fontSize(28)
                ),),
-               Text('${_itemData["selectedAttr"]}',maxLines: 2,textAlign: TextAlign.left,),
+               Text('${_itemData["selectedAttr"]}',maxLines: 2,textAlign: TextAlign.left,style: TextStyle(
+                 fontSize: ScreenAdaper.fontSize(26),
+                 color: Colors.grey
+               )),
                Stack(
                  
                  children: <Widget>[

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/services/CarService.dart';
+import 'package:shop/services/UserService.dart';
 import '../../provider/CartProvider.dart';
 import '../../pages/Cart/CartItem.dart';
 import '../../services/ScreenAdaper.dart';
@@ -12,7 +15,6 @@ class ShopCarPage extends StatefulWidget {
 }
 
 class _ShopCarPageState extends State<ShopCarPage> {
-
   bool _isEdit = false;
 
   @override
@@ -23,12 +25,14 @@ class _ShopCarPageState extends State<ShopCarPage> {
       appBar: AppBar(
         title: Text("购物车"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.launch), onPressed: (){
-            setState(() {
-              this._isEdit = !this._isEdit;
-            });
-            print('编辑');
-          })
+          IconButton(
+              icon: Icon(Icons.launch),
+              onPressed: () {
+                setState(() {
+                  this._isEdit = !this._isEdit;
+                });
+                print('编辑');
+              })
         ],
       ),
       body: cartProvider.cartList.length > 0
@@ -64,12 +68,17 @@ class _ShopCarPageState extends State<ShopCarPage> {
                                         cartProvider.checkAll(val);
                                       })),
                               Text("全选"),
-                              SizedBox(width: 20,),
-                              this._isEdit ? Text(''):Text("合计: "),
-                              this._isEdit ? Text(''): Text("${cartProvider.totalPrice}",style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.red
-                              ),)
+                              SizedBox(
+                                width: 20,
+                              ),
+                              this._isEdit ? Text('') : Text("合计: "),
+                              this._isEdit
+                                  ? Text('')
+                                  : Text(
+                                      "${cartProvider.totalPrice}",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red),
+                                    )
                             ],
                           ),
                         ),
@@ -81,8 +90,10 @@ class _ShopCarPageState extends State<ShopCarPage> {
                                   child: this._isEdit ? Text("删除") : Text("结算"),
                                   color: Colors.red,
                                   onPressed: () {
-                                    if(this._isEdit){
+                                    if (this._isEdit) {
                                       cartProvider.removeItem();
+                                    } else {
+                                      _gotoOrderPage();
                                     }
                                   }),
                             ))
@@ -96,5 +107,30 @@ class _ShopCarPageState extends State<ShopCarPage> {
               child: Text("您的购物车空空如也"),
             ),
     );
+  }
+
+  _gotoOrderPage() async {
+    List carListData = await CartService.getCheckCartDta();
+    if (carListData.length > 0) {
+      //4、判断用户有没有登录
+      var loginState = await UserService.getUserLoginState();
+      if (loginState) {
+        Navigator.pushNamed(context, '/order',
+            arguments: {"checkList": carListData});
+      } else {
+        Fluttertoast.showToast(
+          msg: '您还没有登录，请登录以后再去结算',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+        );
+        Navigator.pushNamed(context, '/login');
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: '购物车没有选中的数据',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
   }
 }

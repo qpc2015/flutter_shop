@@ -35,6 +35,17 @@ class CartService {
     }
   }
 
+  static getCheckCartDta() async{
+    List cartListData = json.decode(await Storage.getString('cartList') ?? '[]');
+    List tempCheckData = [];
+    for(var i=0;i<cartListData.length;i++){
+      if(cartListData[i]["checked"] == true){
+        tempCheckData.add(cartListData[i]);
+      }
+    }
+    return tempCheckData;
+  }
+
   //过滤数据
   static formatCarData(item) {
     String pic = item.pic;
