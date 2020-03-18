@@ -88,7 +88,7 @@ class OrderItem {
   String orderId;
   String productTitle;
   String productId;
-  int productPrice;
+  Object productPrice;
   String productImg;
   int productCount;
   String selectedAttr;
