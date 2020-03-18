@@ -1,5 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shop/config/Config.dart';
+import 'package:shop/model/MyOrderModel.dart';
 import 'package:shop/services/ScreenAdaper.dart';
+import 'package:shop/services/SignServices.dart';
+import 'package:shop/services/UserService.dart';
 
 class MyOrderPage extends StatefulWidget {
   MyOrderPage({Key key}) : super(key: key);
@@ -9,6 +14,15 @@ class MyOrderPage extends StatefulWidget {
 }
 
 class _MyOrderPageState extends State<MyOrderPage> {
+
+  List _orderList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    this._getListData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,42 +35,19 @@ class _MyOrderPageState extends State<MyOrderPage> {
               margin: EdgeInsets.fromLTRB(0, ScreenAdaper.height(80), 0, 0),
               padding: EdgeInsets.all(ScreenAdaper.width(16)),
               child: ListView(
-                children: <Widget>[
-                  Card(
+                children: this._orderList.map((item){
+                  return InkWell(
+                    child:Card(
                     child: Column(
                       children: <Widget>[
                         ListTile(
-                          leading: Container(
-                            width: ScreenAdaper.width(120),
-                            height: ScreenAdaper.height(120),
-                            child: Image.network(
-                              'https://www.itying.com/images/flutter/list2.jpg',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          title: Text("TypeScript入门实战视频教"),
-                          trailing: Text('x1'),
+                          title: Text("订单编号: ${item.sId}",style: TextStyle(
+                            color: Colors.black54
+                          ),),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        ListTile(
-                          leading: Container(
-                            width: ScreenAdaper.width(120),
-                            height: ScreenAdaper.height(120),
-                            child: Image.network(
-                              'https://www.itying.com/images/flutter/list2.jpg',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          title: Text("TypeScript入门实战视频教"),
-                          trailing: Text('x1'),
-                          onTap: (){
-                            Navigator.pushNamed(context, '/orderDetail');
-                          },
-                        ),
-                        SizedBox(
-                          height: 10,
+                        Divider(),
+                        Column(
+                          children: this._orderItemWidget(item.orderItem),
                         ),
                         ListTile(
                           leading: Text("合计：￥345"),
@@ -68,9 +59,12 @@ class _MyOrderPageState extends State<MyOrderPage> {
                         ),
                       ],
                     ),
-                    
-                  )
-                ],
+                  ),
+                  onTap: (){
+                    Navigator.pushNamed(context, '/orderDetail');
+                  },
+                  );
+                }).toList(),
               ),
             ),
             Positioned(
@@ -101,5 +95,40 @@ class _MyOrderPageState extends State<MyOrderPage> {
                 ))
           ],
         ));
+  }
+
+  void _getListData() async{
+    List userinfo = await UserService.getUserInfo();
+    var tempJson = {"uid": userinfo[0]['_id'], "salt": userinfo[0]["salt"]};
+    var sign = SignServices.getSign(tempJson);
+      var api ='${Config.domain}api/orderList?uid=${userinfo[0]['_id']}&sign=$sign';
+    var response = await Dio().get(api);
+    var orderModel = new MyOrderModel.fromJson(response.data);
+    setState(() {
+      this._orderList = orderModel.result;
+    });
+    print(response);
+  }
+
+  List<Widget> _orderItemWidget(orderItems){
+    List<Widget> tempList = [];
+    for(var i=0;i<orderItems.length;i++){
+      tempList.add(Column(
+        children: <Widget>[
+          SizedBox(height: 10,),
+          ListTile(
+            leading: Container(
+              width: ScreenAdaper.width(120),
+              height: ScreenAdaper.width(120),
+              child: Image.network('${orderItems[i].productImg}',fit: BoxFit.cover,),
+            ),
+            title: Text("${orderItems[i].productTitle}"),
+            trailing: Text('x${orderItems[i].productCount}'),
+          ),
+          SizedBox(height: 10)
+        ],
+      ));
+    }
+    return tempList;
   }
 }

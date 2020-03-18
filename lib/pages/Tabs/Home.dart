@@ -20,7 +20,6 @@ class _HomePageState extends State<HomePage>
   List _hotProductData = [];
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
   @override

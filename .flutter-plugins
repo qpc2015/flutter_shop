@@ -1,7 +1,8 @@
 # This is a generated file; do not edit or check into version control.
-city_pickers=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/city_pickers-0.1.30/
-fluttertoast=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/
-shared_preferences=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/
-shared_preferences_macos=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/
-shared_preferences_web=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/
-webview_flutter=/Users/shurui/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter-0.3.19+9/
+city_pickers=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/city_pickers-0.1.30/
+fluttertoast=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast-3.1.3/
+jpush_flutter=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/jpush_flutter-0.5.3/
+shared_preferences=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences-0.5.6+3/
+shared_preferences_macos=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_macos-0.0.1+6/
+shared_preferences_web=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/shared_preferences_web-0.1.2+4/
+webview_flutter=/Users/pengchengqin/Documents/flutter/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter-0.3.19+9/

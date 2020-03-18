@@ -311,15 +311,13 @@ class _ProductListPageState extends State<ProductListPage> {
         appBar: AppBar(
           title: Container(
           height: ScreenAdaper.height(68),
-          color: Colors.grey,
           child: TextField(
             autofocus:false,
             controller: this._initKeyWordsController,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.all(10),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none
+                borderRadius: BorderRadius.circular(15)
               )
             ), 
             onChanged: (value){

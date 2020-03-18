@@ -39,7 +39,12 @@ class _TabsState extends State<Tabs> {
     return Scaffold(
       body: PageView(
         controller:this._pageController,
-        children:this._pageList
+        children:this._pageList,
+        onPageChanged: (index){
+          setState(() {
+            this._currentIndex = index;
+          });
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
