@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import '../../config/Config.dart';
 import '../../model/FocusModel.dart';
 import '../../model/ProductModel.dart';
+import 'package:apifm/apifm.dart' as Apifm;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -29,7 +30,10 @@ class _HomePageState extends State<HomePage>
     _getLikeProductData();
     _getHotProductData();
     print("home");
+
   }
+
+
 
   _getFocusData() async {
     try {

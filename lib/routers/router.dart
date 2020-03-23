@@ -17,6 +17,7 @@ import '../pages/Adress/AdressEdit.dart';
 import '../pages/Pay.dart';
 import '../pages/MyOrder.dart';
 import '../pages/OrderDetail.dart';
+import '../pages/Login/Register.dart';
 
 //配置路由
 final routes = {
@@ -24,6 +25,7 @@ final routes = {
   '/search': (context) => SearchPage(),
   '/shopcart': (context) => ShopCarPage(),
   '/login': (context) => LoginPage(),
+  '/register':  (context) => RegisterPage(),
   '/registerFirst': (context) => RegisterFirstPage(),
   '/adressList': (context) => AdressListPage(),
   '/adressAdd': (context) => AdressAddPage(),

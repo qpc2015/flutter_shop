@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,9 @@ import 'package:shop/services/Storage.dart';
 import '../../Widget/QText.dart';
 import 'package:shop/services/ScreenAdaper.dart';
 import '../../services/EventBus.dart';
+import 'package:apifm/apifm.dart' as Apifm;
+import '../../config/Config.dart';
+import 'package:device_info/device_info.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -24,9 +28,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.close), onPressed: () {
-          Navigator.pop(context);
-        }),
+        leading: IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
         actions: <Widget>[
           FlatButton(onPressed: () {}, child: Text("客服")),
         ],
@@ -74,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.centerRight,
                     child: InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, '/registerFirst');
+                        Navigator.pushNamed(context, '/register');
                       },
                       child: Text('新用户注册'),
                     ),
@@ -110,21 +116,43 @@ class _LoginPageState extends State<LoginPage> {
         gravity: ToastGravity.CENTER,
       );
     } else {
-      var api = '${Config.domain}api/doLogin';
-      var response = await Dio().post(api,
-          data: {"username": this.username, "password": this.password});
-      print(response.data);
-      if (response.data["success"]) {
-        Storage.setString('userInfo', json.encode(response.data["userinfo"]));
+      String deviceId, deviceName;
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceId = iosInfo.identifierForVendor;
+        deviceName = iosInfo.name;
+      } else if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceId = androidInfo.id;
+        deviceName = androidInfo.display;
+      }
+      var res = await Apifm.loginMobile(
+          this.username, this.password, deviceId, deviceName);
+      if (res['code'] == 0) {
+        Storage.setString('userInfo', json.encode(res["data"]));
         eventBus.fire(new UserEvent("登录成功"));
         Navigator.pop(context);
+        // processLoginSuccess (res['data']['token'], res['data']['uid']);
       } else {
         Fluttertoast.showToast(
-          msg: '${response.data["message"]}',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-        );
+            msg: res['msg'], gravity: ToastGravity.CENTER, fontSize: 14);
       }
+      // var api = '${Config.domain}api/doLogin';
+      // var response = await Dio().post(api,
+      //     data: {"username": this.username, "password": this.password});
+      // print(response.data);
+      // if (response.data["success"]) {
+      //   Storage.setString('userInfo', json.encode(response.data["userinfo"]));
+      //   eventBus.fire(new UserEvent("登录成功"));
+      //   Navigator.pop(context);
+      // } else {
+      //   Fluttertoast.showToast(
+      //     msg: '${response.data["message"]}',
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.CENTER,
+      //   );
+      // }
     }
   }
 }
