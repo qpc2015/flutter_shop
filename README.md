@@ -2,18 +2,11 @@
 
 ##  screen shot for iOS
 
-![IMG_0703](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0703.PNG)
+![IMG_0703](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/001.png)
 
-![IMG_0704](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0704.PNG)
+![IMG_0704](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/002.png)
 
-![IMG_0705](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0705.PNG)
-
-![IMG_0706](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0706.PNG)
-
-![IMG_0707](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0707.PNG)
-
-![IMG_0708](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/IMG_0708.PNG)
-
+![IMG_0705](https://github.com/qpc2015/flutter_shop/blob/master/screenshot/003.png)
 
 
 ## Setup
